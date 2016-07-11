@@ -1,11 +1,15 @@
-sawtooth saw => dac;
+Faust saw => dac;
+saw.eval(`
+    freq=button("freq");
+    process=sawtooth(freq);
+    `);
 20000 => int t;
 100 => float freq;
-freq => saw.freq;
+saw.v("freq",freq);
     
 while (t>0) {
     0.9999 *=> freq;
-    freq => saw.freq;
+    saw.v("freq",freq);;
     t--;
     samp => now;
 }
