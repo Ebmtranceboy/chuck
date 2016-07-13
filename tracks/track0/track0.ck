@@ -1,7 +1,7 @@
 Faust saw => dac;
 saw.eval(`
     freq=button("freq");
-    process=sawtooth(freq);
+    process=sawtooth(freq)/100;
     `);
 20000 => int t;
 100 => float freq;

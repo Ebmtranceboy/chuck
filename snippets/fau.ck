@@ -1,7 +1,7 @@
 Faust fck => dac;
 fck.eval(` 
     freq=button("freq");    
-    process=sawtooth(freq);    
+    process=sawtooth(freq)/100;    
     `);
     
 while(true){
