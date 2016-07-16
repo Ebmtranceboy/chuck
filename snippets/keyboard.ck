@@ -17,8 +17,12 @@ if( !min.open(port) )  // (2) Tries to open it on port, handles failure
 MidiMsg msg;           // (3) Makes object to hold MIDI messages
 
 // make an instrument to play
-logan piano => dac;   // (4) Rhodey piano to play with MIDI controller
+Faust logan;
+logan.compile(me.dir() + "../generators/logan.dsp");
+logan => dac;   // (4) Rhodey piano to play with MIDI controller
 0.93 => float wet;
+0 => logan.gain;
+ 
 // loop
 while( true )          // (5) Infinite loop
 {
@@ -26,18 +30,18 @@ while( true )          // (5) Infinite loop
                        // advance when receive MIDI msg 
     samp => now;
     0.99999 *=> wet;
-    wet => piano.wet;
-    
+    logan.v("wet",wet);
+   
     while( min.recv(msg) )
     {
         <<< msg.data1, msg.data2, msg.data3 >>>;
         if (msg.data1 == 144) {
-            Std.mtof(msg.data2) => piano.freq;
+            msg.data3/127.0/100 => logan.gain;
+            logan.v("freq", Std.mtof(msg.data2));
             0.93 => wet;
-            msg.data3/127.0 => piano.gain;
-        }
+       }
         else {
-            0 => piano.gain;
+            0 => logan.gain;
         }
     }
 }

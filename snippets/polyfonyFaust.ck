@@ -35,14 +35,16 @@ Event @ us[128];
 
 // the base patch
 Gain g => JCRev r => dac;
-.08 => g.gain;
-.2 => r.mix;
+0.8 => g.gain;
+.05 => r.mix;
 
 // handler for a single voice
 fun void handler()
 {
     // don't connect to dac until we need it
-    Mandolin m;
+    Faust inst;
+    inst.compile("generators/logan.dsp");
+    //inst.eval(`freq=button("freq");proc=sawtooth(freq);process=proc,proc;`);
     Event off;
     int note;
 
@@ -51,15 +53,17 @@ fun void handler()
         on => now;
         on.note => note;
         // dynamically repatch
-        m => g;
-        Std.mtof( note ) => m.freq;
-        Std.rand2f( .6, .8 ) => m.pluckPos;
-        on.velocity / 128.0 => m.pluck;
+        inst => g;
+        0.1 => inst.gain;
+        inst.v("freq", Std.mtof( note ));
+        inst.v("wet", 1);
+        //Std.rand2f( .6, .8 ) => m.pluckPos;
+        //on.velocity / 128.0 => m.pluck;
         off @=> us[note];
 
         off => now;
         null @=> us[note];
-        m =< g;
+        inst =< g;
     }
 }
 

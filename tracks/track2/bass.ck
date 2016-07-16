@@ -3,7 +3,7 @@ Scale sc;
 TimeGrid tg;
 StifKarp inst;
 inst => dac;
-0.1 => inst.gain;
+0.05 => inst.gain;
 tg.set(1::minute/140/2, 8, 8); // 140BPM, 8 beats, 8 measures
 
 [0, 3, 4, 1, 5, 4, 3, 3] @=> int bass[];
