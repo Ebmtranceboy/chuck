@@ -45,10 +45,10 @@ xtwo = phm + saw;
 v = mirror(-0.5, 0.5, 2.*xtwo - 0.5);
 two = v*(4.*v^2 - 3.);
 inverse (x) = 1/x;
-gain = (+ (1 - 1') : *(0.9999)) ~ _;
-proc = sawtooth(freq)*gain;
+gain(imp) = (+(imp) : *(0.9999)) ~ _;
+proc = gain : *(sawtooth(freq));
+process = _ <: proc, proc;
 //((1. - env12)*one + env12*two); // : moog_vcf(wet,1000);
-process = proc, proc;
 
 <mdoc>
 <equation>process</equation>

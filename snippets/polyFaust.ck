@@ -1,8 +1,8 @@
 //------------------------------------------------
-// name: polyfony.ck
-// desc: polyfonic mandolin model
+// name: polyFaust.ck
+// desc: polyfonic Faust instrument model
 //
-// by: Ananya Misra and Ge Wang
+// initially by: Ananya Misra and Ge Wang
 // send all complaints to prc@cs.princeton.edu
 //--------------------------------------------
 
@@ -43,35 +43,33 @@ fun void handler()
 {
     // don't connect to dac until we need it
     Faust imp => Faust inst;
-    //inst.compile("modifiers/envelop.dsp");
-    inst.compile("generators/logan.dsp");
-    //inst.eval(`freq=button("freq");proc=sawtooth(freq);process=proc,proc;`);
-    //inst.eval(`process=button("wet"),1;`);
+    
+    // simple instrument with amplitude driven by impulsion
+    inst.eval(`
+       freq=button("freq");
+       gain(imp) = (+(imp) : *(0.9999)) ~ _;
+       proc = gain : *(sawtooth(freq));
+       process = _ <: proc, proc;
+    `);
+    0.5 => inst.gain;
+    
     Event off;
     int note;
 
     while( true )
     {
+        // impulse instrument
         imp.eval("process = 1 - 1';");
         on => now;
         on.note => note;
         // dynamically repatch
         inst => g;
-        0.1 => inst.gain;
         inst.v("freq", Std.mtof( note ));
-        //inst.v("wet", 1);
-        //inst.v("play", 1);
-        //Std.rand2f( .6, .8 ) => m.pluckPos;
-        //on.velocity / 128.0 => m.pluck;
-        //<<<inst.dump()>>>;
         off @=> us[note];
         
         off => now;
         null @=> us[note];
         inst =< g;
-        
- //       inst.v("wet", 0);
-        
     }
 }
 
